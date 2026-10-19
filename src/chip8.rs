@@ -69,6 +69,8 @@ impl Chip8 {
         let nn = instr & 0x00ff;
         let nnn = instr & 0x0fff;
 
+        println!("{}", code);
+
         // execute
         match code {
             0xd000 => {
