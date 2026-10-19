@@ -74,6 +74,15 @@ impl Chip8 {
 
         // execute
         match code {
+            0x0000 => {
+                match code & nn {
+                    0xe0 => { self.display_buf.fill(0); }
+                    // 0xee => {
+                    //     self.pc = if let top = self.stack.last()
+                    // }
+                    _ => (),
+                }
+            }
             0xd000 => {
                 self.reg[0x0f] = 0;
                 let xpos = self.reg[x] as usize % constants::DISPLAY_WIDTH;
