@@ -6,6 +6,7 @@ pub struct Chip8 {
     pub reg: [u8; constants::REGISTER_COUNT],
     pub idx_reg: u16,
     pub stack: [u16; constants::STACK_SIZE],
+    pub sp: usize,
     pub pc: usize,
     pub dt: u8,
     pub st: u8,
@@ -20,6 +21,7 @@ impl Chip8 {
             reg: [0; constants::REGISTER_COUNT],
             idx_reg: 0,
             stack: [0; constants::STACK_SIZE],
+            sp: 0,
             pc: 0,
             dt: 0,
             st: 0,
@@ -51,10 +53,11 @@ impl Chip8 {
         chip8
     }
 
-    pub fn load_rom(&mut self, rom: Vec<u8>) {
+    pub fn load_rom(&mut self, rom: &str) {
+        let rom = std::fs::read(rom).unwrap();
         let rom_size = rom.len();
         let rom_addr = constants::PROGRAM_START_ADDRESS + rom_size;
-        self.mem[constants::PROGRAM_START_ADDRESS..rom_addr].copy_from_slice(&rom[..rom_size]);
+        self.mem[constants::PROGRAM_START_ADDRESS..rom_addr].copy_from_slice(&rom[0..rom_size]);
     }
 
     pub fn cycle(&mut self) {
@@ -70,25 +73,25 @@ impl Chip8 {
         let nn = instr & 0x00ff;
         let nnn = instr & 0x0fff;
 
-        println!("{:x}", code);
+        println!("{:x}", instr & 0xffff);
 
         // execute
         match code {
-            0x0000 => {
-                match code & nn {
+            0x0 => {
+                match nn {
                     0xe0 => { self.display_buf.fill(0); }
-                    0xee => {
-                        if let Some(&value) = self.stack.last() {
-                            self.pc = value as usize;
-
-                            self.stack[self.stack.len() - 1] = 0;
-                        }
-                    }
+                    0xee => { self.pc = self.stack[self.sp] as usize; }
                     _ => (),
                 }
             }
-            0xd000 => {
-                self.reg[0x0f] = 0;
+            0x1 => { self.pc = nnn as usize }
+            0x2 => {
+                self.sp += 1;
+                self.stack[self.sp] = self.pc as u16;
+                self.pc = nnn as usize;
+            }
+            0xd => {
+                self.reg[0xf] = 0;
                 let xpos = self.reg[x] as usize % constants::DISPLAY_WIDTH;
                 let ypos = self.reg[y] as usize % constants::DISPLAY_HEIGHT;
 

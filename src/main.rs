@@ -7,7 +7,9 @@ fn main() {
     let mut chip_walo = Chip8::init();
     let args: Vec<String> = std::env::args().collect();
 
-    chip_walo.load_rom(args[1].as_bytes().to_vec());
+    // println!("{:?}", args);
+
+    chip_walo.load_rom(args[1].trim());
 
     loop {
         chip_walo.cycle();
