@@ -48,4 +48,11 @@ impl Chip8 {
 
         chip8
     }
+
+    pub fn load_rom(&mut self, rom: Vec<u8>) {
+        let rom_size = rom.len();
+        let rom_addr = constants::PROGRAM_START_ADDRESS + rom_size;
+        self.mem[constants::PROGRAM_START_ADDRESS..rom_addr]
+            .copy_from_slice(&rom[..rom_size]);
+    }
 }
