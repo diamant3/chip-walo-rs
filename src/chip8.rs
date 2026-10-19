@@ -77,9 +77,13 @@ impl Chip8 {
             0x0000 => {
                 match code & nn {
                     0xe0 => { self.display_buf.fill(0); }
-                    // 0xee => {
-                    //     self.pc = if let top = self.stack.last()
-                    // }
+                    0xee => {
+                        if let Some(&value) = self.stack.last() {
+                            self.pc = value as usize;
+
+                            self.stack[self.stack.len() - 1] = 0;
+                        }
+                    }
                     _ => (),
                 }
             }
