@@ -60,6 +60,7 @@ impl Chip8 {
     pub fn cycle(&mut self) {
         // fetch
         let instr: u16 = ((self.mem[self.pc] as u16) << 8) | self.mem[self.pc + 1] as u16;
+        self.pc += 2;
 
         // decode
         let code = instr & 0xf000;
@@ -69,7 +70,7 @@ impl Chip8 {
         let nn = instr & 0x00ff;
         let nnn = instr & 0x0fff;
 
-        println!("{}", code);
+        println!("{:x}", code);
 
         // execute
         match code {
