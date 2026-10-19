@@ -29,7 +29,7 @@ impl Chip8 {
             display_update: false,
         };
 
-        let fonts: [u8; 80] = [
+        let fonts = [
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1
             0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -54,7 +54,7 @@ impl Chip8 {
     }
 
     pub fn load_rom(&mut self, rom: &str) {
-        let rom = std::fs::read(rom).unwrap();
+        let rom = std::fs::read(rom.trim()).unwrap();
         let rom_size = rom.len();
         let rom_addr = constants::PROGRAM_START_ADDRESS + rom_size;
         self.mem[constants::PROGRAM_START_ADDRESS..rom_addr].copy_from_slice(&rom[0..rom_size]);
@@ -77,20 +77,23 @@ impl Chip8 {
 
         // execute
         match code {
-            0x0 => {
+            0x0000 => {
                 match nn {
                     0xe0 => { self.display_buf.fill(0); }
-                    0xee => { self.pc = self.stack[self.sp] as usize; }
+                    0xee => {
+                        self.pc = self.stack[self.sp] as usize;
+                        self.sp -= 1;
+                    }
                     _ => (),
                 }
             }
-            0x1 => { self.pc = nnn as usize }
-            0x2 => {
-                self.sp += 1;
+            0x1000 => { self.pc = nnn as usize }
+            0x2000 => {
                 self.stack[self.sp] = self.pc as u16;
+                self.sp += 1;
                 self.pc = nnn as usize;
             }
-            0xd => {
+            0xd000 => {
                 self.reg[0xf] = 0;
                 let xpos = self.reg[x] as usize % constants::DISPLAY_WIDTH;
                 let ypos = self.reg[y] as usize % constants::DISPLAY_HEIGHT;

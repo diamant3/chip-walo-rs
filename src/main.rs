@@ -5,11 +5,9 @@ use chip8::Chip8;
 
 fn main() {
     let mut chip_walo = Chip8::init();
-    let args: Vec<String> = std::env::args().collect();
+    let args = std::env::args().collect::<Vec<String>>();
 
-    // println!("{:?}", args);
-
-    chip_walo.load_rom(args[1].trim());
+    chip_walo.load_rom(args[1].as_ref());
 
     loop {
         chip_walo.cycle();
