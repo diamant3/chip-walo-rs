@@ -77,17 +77,17 @@ impl Chip8 {
 
         // execute
         match code {
-            0x0000 => {
-                match nn {
-                    0xe0 => { self.display_buf.fill(0); }
-                    0xee => {
-                        self.pc = self.stack[self.sp] as usize;
-                        self.sp -= 1;
-                    }
-                    _ => (),
+            0x0000 => match nn {
+                0xe0 => {
+                    self.display_buf.fill(0);
                 }
-            }
-            0x1000 => { self.pc = nnn as usize }
+                0xee => {
+                    self.pc = self.stack[self.sp] as usize;
+                    self.sp -= 1;
+                }
+                _ => (),
+            },
+            0x1000 => self.pc = nnn as usize,
             0x2000 => {
                 self.stack[self.sp] = self.pc as u16;
                 self.sp += 1;
