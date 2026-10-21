@@ -93,12 +93,12 @@ impl Chip8 {
                 self.pc = nnn as usize;
             }
             0x3000 => {
-                if self.reg[x] == n as u8 {
+                if self.reg[x] == nn as u8 {
                     self.pc += 2;
                 }
             }
             0x4000 => {
-                if self.reg[x] != n as u8 {
+                if self.reg[x] != nn as u8 {
                     self.pc += 2;
                 }
             }
@@ -111,12 +111,7 @@ impl Chip8 {
                 self.reg[x] = nn as u8;
             }
             0x7000 => {
-                let result = self.reg[x] as u16 + nn;
-                if result > 255 {
-                    self.reg[x] = 255;
-                } else {
-                    self.reg[x] += nn as u8;
-                }
+                self.reg[x] = self.reg[x].wrapping_add(nn as u8);
             }
             0xa000 => {
                 self.idx_reg = nnn;
