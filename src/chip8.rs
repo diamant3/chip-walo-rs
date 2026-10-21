@@ -80,23 +80,43 @@ impl Chip8 {
                 0xe0 => {
                     self.display_buf.fill(0);
                 }
-                // 0xee => {
-                //     self.pc = self.stack[self.sp] as usize;
-                //     self.sp -= 1;
-                // },
+                0xee => {
+                    self.pc = self.stack[self.sp] as usize;
+                    self.sp -= 1;
+                }
                 _ => (),
-            },
+            }
             0x1000 => self.pc = nnn as usize,
-            // 0x2000 => {
-            //     self.sp += 1;
-            //     self.stack[self.sp] = self.pc as u16;
-            //     self.pc = nnn as usize;
-            // },
+            0x2000 => {
+                self.sp += 1;
+                self.stack[self.sp] = self.pc as u16;
+                self.pc = nnn as usize;
+            }
+            0x3000 => {
+                if self.reg[x] == n as u8 {
+                    self.pc += 2;
+                }
+            }
+            0x4000 => {
+                if self.reg[x] != n as u8 {
+                    self.pc += 2;
+                }
+            }
+            0x5000 => {
+                if self.reg[x] == self.reg[y] {
+                    self.pc += 2;
+                }
+            }
             0x6000 => {
                 self.reg[x] = nn as u8;
             }
             0x7000 => {
-                self.reg[x] += nn as u8;
+                let result = self.reg[x] as u16 + nn;
+                if result > 255 {
+                    self.reg[x] = 255;
+                } else {
+                    self.reg[x] += nn as u8;
+                }
             }
             0xa000 => {
                 self.idx_reg = nnn;
@@ -105,9 +125,8 @@ impl Chip8 {
                 self.reg[0xf] = 0;
                 let xpos = self.reg[x] as usize % constants::DISPLAY_WIDTH;
                 let ypos = self.reg[y] as usize % constants::DISPLAY_HEIGHT;
-                let px_height = n;
 
-                for yline in 0..px_height {
+                for yline in 0..n {
                     let px = self.mem[(self.idx_reg + yline) as usize];
 
                     for xline in 0..8 {
