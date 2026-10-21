@@ -164,7 +164,7 @@ impl Chip8 {
             0xc000 => {
                 let mut rng = rand::rng();
                 let num = rng.random_range(0..=255);
-                self.reg[x] = num;
+                self.reg[x] = (num & nn) as u8;
             }
             0xd000 => {
                 self.reg[0xf] = 0;
@@ -225,10 +225,9 @@ impl Chip8 {
                     self.idx_reg = (self.reg[x] * 5) as u16;
                 }
                 0x33 => {
-                    let vx = self.reg[x];
-                    self.mem[self.idx_reg as usize] = vx / 100;
-                    self.mem[self.idx_reg as usize + 1] = (vx / 10) % 10;
-                    self.mem[self.idx_reg as usize + 2] = (vx / 100) % 10;
+                    self.mem[self.idx_reg as usize] = self.reg[x] / 100;
+                    self.mem[self.idx_reg as usize + 1] = (self.reg[x] / 10) % 10;
+                    self.mem[self.idx_reg as usize + 2] = self.reg[x] % 10;
                 }
                 0x55 => {
                     for reg in 0..=x {
