@@ -163,8 +163,8 @@ impl Chip8 {
             }
             0xc000 => {
                 let mut rng = rand::rng();
-                let num = rng.random_range(0..=255);
-                self.reg[x] = (num & nn) as u8;
+                let num: u8 = rng.random();
+                self.reg[x] = num & nn as u8;
             }
             0xd000 => {
                 self.reg[0xf] = 0;
