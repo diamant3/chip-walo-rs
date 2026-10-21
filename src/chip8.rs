@@ -86,7 +86,7 @@ impl Chip8 {
                     self.pc = self.stack[self.sp] as usize;
                     self.sp -= 1;
                 }
-                _ => ()
+                _ => (),
             },
             0x1000 => self.pc = nnn as usize,
             0x2000 => {
@@ -147,8 +147,8 @@ impl Chip8 {
                     self.reg[x] <<= 1;
                     self.reg[0xf] = result;
                 }
-                _ => ()
-            }
+                _ => (),
+            },
             0x9000 => {
                 if self.reg[x] != self.reg[y] {
                     self.pc += 2;
@@ -198,8 +198,8 @@ impl Chip8 {
                         self.pc += 2;
                     }
                 }
-                _ => ()
-            }
+                _ => (),
+            },
             0xf000 => match nn {
                 0x07 => {
                     self.reg[x] = self.dt;
@@ -241,8 +241,8 @@ impl Chip8 {
                         self.idx_reg += reg as u16;
                     }
                 }
-                _ => ()
-            }
+                _ => (),
+            },
             _ => (),
         }
     }

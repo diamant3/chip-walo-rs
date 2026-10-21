@@ -43,7 +43,7 @@ fn main() {
                     keycode: Some(sdl2::keyboard::Keycode::ESCAPE),
                     ..
                 } => break 'running,
-                _ => {}
+                _ => (),
             }
         }
 
