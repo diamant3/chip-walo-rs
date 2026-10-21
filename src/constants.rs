@@ -6,3 +6,4 @@ pub const PROGRAM_START_ADDRESS: usize = 512;
 
 pub const DISPLAY_WIDTH: usize = 64;
 pub const DISPLAY_HEIGHT: usize = 32;
+pub const DISPLAY_SCALE: usize = 10;

@@ -11,7 +11,6 @@ pub struct Chip8 {
     pub dt: u8,
     pub st: u8,
     pub display_buf: [u8; constants::DISPLAY_SIZE],
-    pub display_update: bool,
 }
 
 impl Chip8 {
@@ -26,7 +25,6 @@ impl Chip8 {
             dt: 0,
             st: 0,
             display_buf: [0; constants::DISPLAY_SIZE],
-            display_update: false,
         };
 
         let fonts = [
@@ -48,7 +46,8 @@ impl Chip8 {
             0xF0, 0x80, 0xF0, 0x80, 0x80, // F
         ];
 
-        chip8.mem[..fonts.len()].copy_from_slice(&fonts);
+        chip8.mem[0..fonts.len()].copy_from_slice(&fonts);
+        chip8.pc = constants::PROGRAM_START_ADDRESS;
 
         chip8
     }
@@ -73,7 +72,7 @@ impl Chip8 {
         let nn = instr & 0x00ff;
         let nnn = instr & 0x0fff;
 
-        println!("{:x}", instr & 0xffff);
+        // println!("0x{:x}", instr & 0xffff);
 
         // execute
         match code {
@@ -81,54 +80,45 @@ impl Chip8 {
                 0xe0 => {
                     self.display_buf.fill(0);
                 }
-                0xee => {
-                    self.pc = self.stack[self.sp] as usize;
-                    self.sp -= 1;
-                }
+                // 0xee => {
+                //     self.pc = self.stack[self.sp] as usize;
+                //     self.sp -= 1;
+                // },
                 _ => (),
             },
             0x1000 => self.pc = nnn as usize,
-            0x2000 => {
-                self.stack[self.sp] = self.pc as u16;
-                self.sp += 1;
-                self.pc = nnn as usize;
+            // 0x2000 => {
+            //     self.sp += 1;
+            //     self.stack[self.sp] = self.pc as u16;
+            //     self.pc = nnn as usize;
+            // },
+            0x6000 => {
+                self.reg[x] = n as u8;
+            }
+            0xa000 => {
+                self.idx_reg = n;
             }
             0xd000 => {
                 self.reg[0xf] = 0;
                 let xpos = self.reg[x] as usize % constants::DISPLAY_WIDTH;
                 let ypos = self.reg[y] as usize % constants::DISPLAY_HEIGHT;
+                let px_height = n;
 
-                for row in 0..n {
-                    let bits = self.mem[(self.idx_reg + row) as usize];
-                    let cy = (ypos + row as usize) % constants::DISPLAY_HEIGHT;
+                for yline in 0..px_height {
+                    let px = self.mem[(self.idx_reg + yline) as usize];
 
-                    for col in 0..8 as usize {
-                        let cx = (xpos + col) % constants::DISPLAY_WIDTH;
-                        let current_color = self.display_buf[cy * constants::DISPLAY_WIDTH + cx];
-                        let mask = 1 << 7 - col;
-                        let color = bits & mask;
-
-                        if color > 0 {
-                            if current_color > 0 {
-                                self.display_buf[cy * constants::DISPLAY_WIDTH + cx] = 0;
-                                self.reg[0x0f] = 1;
-                            } else {
-                                self.display_buf[cy * constants::DISPLAY_WIDTH + cx] = 1;
+                    for xline in 0..8 {
+                        if (px & (0x80 >> xline)) > 0 {
+                            let target =
+                                constants::DISPLAY_WIDTH * (ypos + yline as usize) + (xpos + xline);
+                            if self.display_buf[target] > 0 {
+                                self.reg[0xf] = 1;
                             }
-                        } else {
-                        }
 
-                        if cx == constants::DISPLAY_WIDTH - 1 {
-                            break;
+                            self.display_buf[target] ^= 1;
                         }
-                    }
-
-                    if cy == constants::DISPLAY_HEIGHT - 1 {
-                        break;
                     }
                 }
-
-                // self.display_update = true;
             }
             _ => (),
         }
