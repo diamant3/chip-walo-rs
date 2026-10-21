@@ -113,6 +113,11 @@ impl Chip8 {
             0x7000 => {
                 self.reg[x] = self.reg[x].wrapping_add(nn as u8);
             }
+            0x9000 => {
+                if self.reg[x] != self.reg[y] {
+                    self.pc += 2;
+                }
+            }
             0xa000 => {
                 self.idx_reg = nnn;
             }
