@@ -93,10 +93,10 @@ impl Chip8 {
             //     self.pc = nnn as usize;
             // },
             0x6000 => {
-                self.reg[x] = n as u8;
+                self.reg[x] = nn as u8;
             }
             0xa000 => {
-                self.idx_reg = n;
+                self.idx_reg = nnn;
             }
             0xd000 => {
                 self.reg[0xf] = 0;
