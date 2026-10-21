@@ -72,7 +72,7 @@ impl Chip8 {
         let nn = instr & 0x00ff;
         let nnn = instr & 0x0fff;
 
-        // println!("0x{:x}", instr & 0xffff);
+        println!("0x{:x}", instr & 0xffff);
 
         // execute
         match code {
@@ -94,6 +94,9 @@ impl Chip8 {
             // },
             0x6000 => {
                 self.reg[x] = nn as u8;
+            }
+            0x7000 => {
+                self.reg[x] += nn as u8;
             }
             0xa000 => {
                 self.idx_reg = nnn;
