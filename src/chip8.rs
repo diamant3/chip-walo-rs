@@ -113,6 +113,40 @@ impl Chip8 {
             0x7000 => {
                 self.reg[x] = self.reg[x].wrapping_add(nn as u8);
             }
+            0x8000 => match n {
+                0x0 => {
+                    self.reg[x] = self.reg[y];
+                }
+                0x1 => {
+                    self.reg[x] |= self.reg[y];
+                }
+                0x2 => {
+                    self.reg[x] &= self.reg[y];
+                }
+                0x3 => {
+                    self.reg[x] ^= self.reg[y];
+                }
+                0x4 => {
+                    self.reg[x] = self.reg[x].wrapping_add(self.reg[y]);
+                }
+                0x5 => {
+                    self.reg[x]  = self.reg[x].wrapping_sub(self.reg[y]);
+                }
+                0x6 => {
+                    let result = self.reg[x] % 2;
+                    self.reg[x] >>= 1;
+                    self.reg[0xf] = result;
+                }
+                0x7 => {
+                    self.reg[x] = self.reg[y].wrapping_sub(self.reg[x]);
+                }
+                0xe => {
+                    let result = (self.reg[x] & 128) >> 0x7;
+                    self.reg[x] <<= 1;
+                    self.reg[0xf] = result;
+                }
+                _ => ()
+            }
             0x9000 => {
                 if self.reg[x] != self.reg[y] {
                     self.pc += 2;
