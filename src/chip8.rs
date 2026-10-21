@@ -1,5 +1,7 @@
 use crate::constants;
 
+use rand::RngExt;
+
 #[derive(Debug)]
 pub struct Chip8 {
     pub mem: [u8; constants::MEMORY_SIZE],
@@ -11,6 +13,7 @@ pub struct Chip8 {
     pub dt: u8,
     pub st: u8,
     pub display_buf: [u8; constants::DISPLAY_SIZE],
+    pub key: [u8; constants::KEY_COUNT],
 }
 
 impl Chip8 {
@@ -25,6 +28,7 @@ impl Chip8 {
             dt: 0,
             st: 0,
             display_buf: [0; constants::DISPLAY_SIZE],
+            key: [0; constants::KEY_COUNT],
         };
 
         let fonts = [
@@ -72,8 +76,6 @@ impl Chip8 {
         let nn = instr & 0x00ff;
         let nnn = instr & 0x0fff;
 
-        println!("0x{:x}", instr & 0xffff);
-
         // execute
         match code {
             0x0000 => match nn {
@@ -84,8 +86,8 @@ impl Chip8 {
                     self.pc = self.stack[self.sp] as usize;
                     self.sp -= 1;
                 }
-                _ => (),
-            }
+                _ => ()
+            },
             0x1000 => self.pc = nnn as usize,
             0x2000 => {
                 self.sp += 1;
@@ -130,7 +132,7 @@ impl Chip8 {
                     self.reg[x] = self.reg[x].wrapping_add(self.reg[y]);
                 }
                 0x5 => {
-                    self.reg[x]  = self.reg[x].wrapping_sub(self.reg[y]);
+                    self.reg[x] = self.reg[x].wrapping_sub(self.reg[y]);
                 }
                 0x6 => {
                     let result = self.reg[x] % 2;
@@ -155,6 +157,15 @@ impl Chip8 {
             0xa000 => {
                 self.idx_reg = nnn;
             }
+            0xb000 => {
+                let x = (nnn & 0x0f00) as usize;
+                self.pc = (self.reg[x] + nnn as u8) as usize;
+            }
+            0xc000 => {
+                let mut rng = rand::rng();
+                let num = rng.random_range(0..=255);
+                self.reg[x] = num;
+            }
             0xd000 => {
                 self.reg[0xf] = 0;
                 let xpos = self.reg[x] as usize % constants::DISPLAY_WIDTH;
@@ -175,6 +186,63 @@ impl Chip8 {
                         }
                     }
                 }
+            }
+            0xe000 => match nn {
+                0x9e => {
+                    if self.key[self.reg[x] as usize] == 1 {
+                        self.pc += 2;
+                    }
+                }
+                0xa1 => {
+                    if self.key[self.reg[x] as usize] == 0 {
+                        self.pc += 2;
+                    }
+                }
+                _ => ()
+            }
+            0xf000 => match nn {
+                0x07 => {
+                    self.reg[x] = self.dt;
+                }
+                0x0a => {
+                    for key in 0..constants::KEY_COUNT {
+                        if self.key[key] == 1 {
+                            self.reg[x] = key as u8;
+                            break;
+                        }
+                    }
+                }
+                0x15 => {
+                    self.dt = self.reg[x];
+                }
+                0x18 => {
+                    self.st = self.reg[x];
+                }
+                0x1e => {
+                    self.idx_reg += self.reg[x] as u16;
+                }
+                0x29 => {
+                    self.idx_reg = (self.reg[x] * 5) as u16;
+                }
+                0x33 => {
+                    let vx = self.reg[x];
+                    self.mem[self.idx_reg as usize] = vx / 100;
+                    self.mem[self.idx_reg as usize + 1] = (vx / 10) % 10;
+                    self.mem[self.idx_reg as usize + 2] = (vx / 100) % 10;
+                }
+                0x55 => {
+                    for reg in 0..=x {
+                        self.mem[self.idx_reg as usize + reg] = self.reg[reg];
+                        self.idx_reg += reg as u16;
+                    }
+                }
+                0x65 => {
+                    for reg in 0..=x {
+                        self.reg[reg as usize] = self.mem[self.idx_reg as usize + reg];
+                        self.idx_reg += reg as u16;
+                    }
+                }
+                _ => ()
             }
             _ => (),
         }
