@@ -106,10 +106,8 @@ fn main() {
         if chip_walo.st > 0 {
             chip_walo.st -= 1;
             beep.play();
-
-            if chip_walo.st == 0 {
-                beep.pause();
-            }
+        } else {
+            beep.pause();
         }
 
         for event in event_pump.poll_iter() {
