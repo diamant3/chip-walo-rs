@@ -129,7 +129,14 @@ impl Chip8 {
                     self.reg[x] ^= self.reg[y];
                 }
                 0x4 => {
-                    self.reg[x] = self.reg[x].wrapping_add(self.reg[y]);
+                    self.reg[x] = self.reg[x].saturating_add(self.reg[y]);
+                    
+                    let result = self.reg[x] as usize + self.reg[y] as usize;
+                    if result > 255 {
+                        self.reg[0xf] = 1;
+                    } else {
+                        self.reg[0xf] = 0;
+                    }
                 }
                 0x5 => {
                     self.reg[x] = self.reg[x].wrapping_sub(self.reg[y]);
