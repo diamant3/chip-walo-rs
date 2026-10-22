@@ -3,11 +3,74 @@ mod constants;
 
 use chip8::Chip8;
 
+// audio implementation from https://gitlab.com/langurmonkey/rchip8/-/commit/bdb44b0c6af845b7edc37f19ca26d004215fe8cc
+struct SquareWave {
+    phase_inc: f32,
+    phase: f32,
+    vol: f32,
+}
+
+impl sdl2::audio::AudioCallback for SquareWave {
+    type Channel = f32;
+
+    fn callback(&mut self, out: &mut [f32]) {
+        for x in out.iter_mut() {
+            *x = if self.phase <= 0.2 {
+                self.vol
+            } else {
+                -self.vol
+            };
+
+            self.phase = (self.phase + self.phase_inc) % 1.0;
+        }
+    }
+}
+
+pub struct Beep {
+    dev: sdl2::audio::AudioDevice<SquareWave>,
+}
+
+impl Beep {
+    pub fn new(ctx: &sdl2::Sdl) -> Self {
+        let audio_subsystem = ctx.audio().unwrap();
+
+        let desired_spec = sdl2::audio::AudioSpecDesired {
+            freq: Some(44100),
+            channels: Some(1),
+            samples: None,
+        };
+
+        let dev = audio_subsystem
+            .open_playback(None, &desired_spec, |callback| {
+                SquareWave {
+                    phase_inc: 440.0 / callback.freq as f32,
+                    phase: 0.0,
+                    vol: 0.2
+                }
+            })
+            .unwrap();
+
+        Beep { dev }
+    }
+
+    pub fn play(&self) {
+        if self.dev.status() == sdl2::audio::AudioStatus::Stopped ||
+            self.dev.status() == sdl2::audio::AudioStatus::Paused {
+                self.dev.resume();
+        }
+    }
+
+    pub fn pause(&self) {
+        self.dev.pause();
+    }
+}
+
 fn main() {
     let mut chip_walo = Chip8::init();
     let args = std::env::args().collect::<Vec<String>>();
 
     let sdl2_ctx = sdl2::init().unwrap();
+    let beep = Beep::new(&sdl2_ctx);
     let video_subsystem = sdl2_ctx.video().unwrap();
     let window = video_subsystem
         .window(
@@ -35,6 +98,19 @@ fn main() {
     let mut event_pump = sdl2_ctx.event_pump().unwrap();
     'running: loop {
         chip_walo.cycle();
+
+        if chip_walo.dt > 0 {
+            chip_walo.dt -= 1;
+        }
+
+        if chip_walo.st > 0 {
+            chip_walo.st -= 1;
+            beep.play();
+
+            if chip_walo.st == 0 {
+                beep.pause();
+            }
+        }
 
         for event in event_pump.poll_iter() {
             match event {
