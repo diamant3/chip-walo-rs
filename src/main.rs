@@ -40,9 +40,219 @@ fn main() {
             match event {
                 sdl2::event::Event::Quit { .. }
                 | sdl2::event::Event::KeyDown {
-                    keycode: Some(sdl2::keyboard::Keycode::ESCAPE),
+                    scancode: Some(sdl2::keyboard::Scancode::Escape),
                     ..
                 } => break 'running,
+                // key down
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::Num1),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x1] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::Num2),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x2] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::Num3),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x3] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::Num4),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0xc] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::Q),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x4] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::W),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x5] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::E),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x6] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::R),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0xd] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::A),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x7] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::S),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x8] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::D),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x9] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::F),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0xe] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::Z),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0xa] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::X),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0x0] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::C),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0xb] = true;
+                }
+                sdl2::event::Event::KeyDown {
+                    scancode: Some(sdl2::keyboard::Scancode::V),
+                    repeat: false,
+                    ..
+                } => {
+                    chip_walo.key[0xf] = true;
+                }
+                // keyup
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::Num1),
+                    ..
+                } => {
+                    chip_walo.key[0x1] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::Num2),
+                    ..
+                } => {
+                    chip_walo.key[0x2] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::Num3),
+                    ..
+                } => {
+                    chip_walo.key[0x3] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::Num4),
+                    ..
+                } => {
+                    chip_walo.key[0xc] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::Q),
+                    ..
+                } => {
+                    chip_walo.key[0x4] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::W),
+                    ..
+                } => {
+                    chip_walo.key[0x5] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::E),
+                    ..
+                } => {
+                    chip_walo.key[0x6] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::R),
+                    ..
+                } => {
+                    chip_walo.key[0xd] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::A),
+                    ..
+                } => {
+                    chip_walo.key[0x7] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::S),
+                    ..
+                } => {
+                    chip_walo.key[0x8] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::D),
+                    ..
+                } => {
+                    chip_walo.key[0x9] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::F),
+                    ..
+                } => {
+                    chip_walo.key[0xe] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::Z),
+                    ..
+                } => {
+                    chip_walo.key[0xa] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::X),
+                    ..
+                } => {
+                    chip_walo.key[0x0] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::C),
+                    ..
+                } => {
+                    chip_walo.key[0xb] = false;
+                }
+                sdl2::event::Event::KeyUp {
+                    scancode: Some(sdl2::keyboard::Scancode::V),
+                    ..
+                } => {
+                    chip_walo.key[0xf] = false;
+                }
                 _ => (),
             }
         }

@@ -13,7 +13,7 @@ pub struct Chip8 {
     pub dt: u8,
     pub st: u8,
     pub display_buf: [u8; constants::DISPLAY_SIZE],
-    pub key: [u8; constants::KEY_COUNT],
+    pub key: [bool; constants::KEY_COUNT],
 }
 
 impl Chip8 {
@@ -28,7 +28,7 @@ impl Chip8 {
             dt: 0,
             st: 0,
             display_buf: [0; constants::DISPLAY_SIZE],
-            key: [0; constants::KEY_COUNT],
+            key: [false; constants::KEY_COUNT],
         };
 
         let fonts = [
@@ -188,12 +188,12 @@ impl Chip8 {
             }
             0xe000 => match nn {
                 0x9e => {
-                    if self.key[self.reg[x] as usize] == 1 {
+                    if self.key[self.reg[x] as usize] {
                         self.pc += 2;
                     }
                 }
                 0xa1 => {
-                    if self.key[self.reg[x] as usize] == 0 {
+                    if !self.key[self.reg[x] as usize] {
                         self.pc += 2;
                     }
                 }
@@ -205,7 +205,7 @@ impl Chip8 {
                 }
                 0x0a => {
                     for key in 0..constants::KEY_COUNT {
-                        if self.key[key] == 1 {
+                        if self.key[key] {
                             self.reg[x] = key as u8;
                             break;
                         }
